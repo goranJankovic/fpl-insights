@@ -4,3 +4,4 @@ __pycache__/
 .idea/
 .ipynb_checkpoints/
 data
+analysis_reports
