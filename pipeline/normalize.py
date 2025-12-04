@@ -119,6 +119,7 @@ def normalize_player_history(player_id: int, player_summary: Dict[str, Any]) -> 
         rows.append((
             player_id,
             gw["round"],
+            gw.get("minutes", 0),
             gw["total_points"],
             gw["goals_scored"],
             gw["assists"],

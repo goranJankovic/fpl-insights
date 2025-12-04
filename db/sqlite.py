@@ -114,6 +114,7 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         player_id INTEGER,
         gameweek INTEGER,
+        minutes INTEGER, 
         total_points INTEGER,
         goals_scored INTEGER,
         assists INTEGER,

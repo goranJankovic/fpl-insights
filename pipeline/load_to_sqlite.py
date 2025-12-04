@@ -75,11 +75,11 @@ def replace_player_history(rows: Iterable[Tuple]):
     cur.execute("DELETE FROM player_history;")
     cur.executemany("""
         INSERT INTO player_history (
-            player_id, gameweek, total_points, goals_scored, assists,
+            player_id, gameweek, minutes, total_points, goals_scored, assists,
             clean_sheets, opponent_team, home_score, away_score, home,
             bonus_points, expected_goals, expected_assists,
             transfers_in, transfers_out, kickoff_time
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     """, rows)
     conn.commit()
     conn.close()
