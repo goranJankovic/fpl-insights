@@ -1,6 +1,8 @@
 import argparse
 import os
 import json
+
+import numpy as np
 import requests
 
 import matplotlib
@@ -311,7 +313,7 @@ def analyze(entry_id: int) -> None:
 
     json_path = os.path.join(outdir, "team_stats.json")
     with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(out_json, f, indent=2)
+        json.dump(to_py(out_json), f, indent=2)
 
     print(f"[team_stats] Saved JSON: {json_path}")
 
@@ -321,6 +323,21 @@ def analyze(entry_id: int) -> None:
 
     conn.close()
     print("[team_stats] Done.")
+
+
+def to_py(obj):
+    """Recursively convert numpy/pandas types to native Python types for JSON serialization."""
+    if isinstance(obj, dict):
+        return {k: to_py(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [to_py(i) for i in obj]
+    if isinstance(obj, (np.int64, np.int32, np.int16, int)):
+        return int(obj)
+    if isinstance(obj, (np.float64, np.float32, float)):
+        return float(obj)
+    if obj is None:
+        return None
+    return obj
 
 
 # ---------------------------
