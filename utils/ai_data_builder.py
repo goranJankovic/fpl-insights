@@ -81,18 +81,6 @@ def get_player_full_history(player_id: int) -> List[Dict[str, Any]]:
         })
     return history
 
-
-# -------------------------------------------------
-# PICK DATA (official FPL API)
-# -------------------------------------------------
-
-def load_picks(entry_id: int, gw: int) -> List[Dict[str, Any]]:
-    url = f"https://fantasy.premierleague.com/api/entry/{entry_id}/event/{gw}/picks/"
-    resp = requests.get(url)
-    resp.raise_for_status()
-    return resp.json().get("picks", [])
-
-
 # -------------------------------------------------
 # BUILD SQUAD FOR A GIVEN GW
 # -------------------------------------------------
