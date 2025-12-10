@@ -279,42 +279,54 @@ def build_transfer_prompt(
     candidate_pool: List[Dict[str, Any]],
 ) -> str:
     """
-    Build prompt for transfer advice.
-    current_team: summary from build_team_json (bank, value, FDR map, etc.).
-    squad_state: result from build_squad_state (squad list, club counts, free_transfers, bank).
-    candidate_pool: reduced pool of good players (already cleaned / filtered).
+    Build prompt for transfer advice with flexible transfer limits.
     """
+
+    free_tf = squad_state.get("free_transfers", 1)
+    allowed_extra = squad_state.get("allowed_extra_transfers", 1)
+
     return (
         "You are an advanced FPL transfer analyst.\n\n"
         f"Target gameweek: {gw}.\n\n"
-        "You will receive three JSON blocks:\n"
-        "1) TEAM JSON: season context, bank, team value, fixtures.\n"
-        "2) SQUAD STATE: players currently owned (with form, minutes, flags), "
-        "club_counts, free_transfers, bank.\n"
-        "3) CANDIDATE POOL: list of strong players from the whole game, "
-        "with price, form_last3, expected_minutes, injury/suspension flags, rotation_risk, "
-        "and FDR for the next few gameweeks.\n\n"
-        "You must obey standard FPL rules:\n"
+
+        "You will receive:\n"
+        "1) TEAM JSON\n"
+        "2) SQUAD STATE\n"
+        "3) CANDIDATE POOL\n\n"
+
+        "FPL RULES:\n"
         "- Budget: incoming_player.price <= outgoing_player.price + squad_state.bank\n"
-        "- Position matching only: GK→GK, DEF→DEF, MID→MID, FWD→FWD\n"
-        "- Max 3 players per club after transfers (use club_counts and team fields).\n"
-        "- Never buy a player who is already owned.\n\n"
-        "Transfer logic:\n"
-        "- Suggest usually 1 transfer if free_transfers = 1.\n"
-        "- You MAY suggest 2 transfers (-4 hit) if needed to afford a clearly better upgrade.\n"
-        "- Never suggest more than 2 transfers or a hit worse than -4.\n"
-        "- Prefer selling players with bad form, low minutes, clear rotation risk, "
-        "suspension, or poor upcoming fixtures.\n"
-        "- Prefer buying players with strong form, good minutes, low rotation risk, "
-        "and good upcoming fixtures.\n\n"
-        "Output:\n"
-        "You MUST respond with a JSON object containing at least:\n"
-        "- gameweek: number\n"
-        "- suggested_transfers: array of objects with fields "
-        "out_id, out_name, in_id, in_name, reason\n"
-        "- hit_cost: number (0, 4, or possibly 8 if absolutely necessary)\n"
-        "- rationale: short string explaining form, fixtures, nailedness and budget reasoning\n\n"
-        "Use only UTF-8 characters, no escaped unicode sequences in names.\n\n"
+        "- Strict position matching (GK→GK, DEF→DEF, MID→MID, FWD→FWD)\n"
+        "- Max 3 players per club after transfers.\n"
+        "- Never buy a player already owned.\n\n"
+
+        "TRANSFER COUNT LOGIC:\n"
+        f"- The manager currently has {free_tf} free transfers.\n"
+        "- Free transfers are free of charge.\n"
+        f"- You may propose UP TO {allowed_extra} additional transfers beyond the free ones.\n"
+        "- Each additional transfer costs exactly -4 points.\n"
+        f"- Maximum hit allowed = {allowed_extra * 4}.\n"
+        f"- Total transfers allowed = {free_tf + allowed_extra}.\n"
+        "- You must NOT exceed these limits.\n\n"
+
+        "WHEN TO SELL:\n"
+        "- poor recent form, low minutes, rotation risk\n"
+        "- suspension or injury\n"
+        "- poor upcoming fixtures (high FDR)\n\n"
+
+        "WHEN TO BUY:\n"
+        "- strong form, reliable minutes\n"
+        "- nailed starter\n"
+        "- good fixture run (low FDR)\n\n"
+
+        "OUTPUT FORMAT (STRICT JSON):\n"
+        "{\n"
+        "  gameweek: number,\n"
+        "  suggested_transfers: [{out_id,out_name,in_id,in_name,reason}],\n"
+        "  hit_cost: number,\n"
+        "  rationale: string\n"
+        "}\n\n"
+
         "TEAM JSON:\n"
         f"{json.dumps(current_team)}\n\n"
         "SQUAD STATE JSON:\n"

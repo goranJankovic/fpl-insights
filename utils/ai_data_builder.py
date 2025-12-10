@@ -376,7 +376,7 @@ def build_team_json(entry_id: int) -> Dict[str, Any]:
 # -------------------------------------------------
 
 
-def build_squad_state(entry_id: int, target_gw: int) -> Dict[str, Any]:
+def build_squad_state(entry_id: int, target_gw: int, free_transfers: int, allowed_extra: int) -> Dict[str, Any]:
     """
     Build the squad state prior to a target GW.
 
@@ -443,10 +443,10 @@ def build_squad_state(entry_id: int, target_gw: int) -> Dict[str, Any]:
         raise ValueError("team_stats.json gw_data is empty when building squad_state.")
 
     last_gw_block = max(gw_data, key=lambda g: g["gw"])
-    free_transfers = last_gw_block.get("transfers", 1)
     bank = last_gw_block.get("bank", 0.0)
 
     return {
+        "allowed_extra": allowed_extra,
         "free_transfers": free_transfers,
         "bank": bank,
         "squad": squad,

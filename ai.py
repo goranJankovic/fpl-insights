@@ -21,7 +21,9 @@ def run_transfers(args):
     result = transfer_advice(
         entry_id=args.team,
         gw=args.gw,
-        candidate_pool_size=args.pool
+        candidate_pool_size=args.pool,
+        free_transfers=args.free_transfers,
+        allowed_extra=args.allowed_extra
     )
     print(json.dumps(result, indent=2, ensure_ascii=False))
 
@@ -70,6 +72,8 @@ def main():
     p_trans.add_argument("--team", type=int, required=True)
     p_trans.add_argument("--gw", type=int, required=True)
     p_trans.add_argument("--pool", type=int, default=60)
+    p_trans.add_argument("--free_transfers", type=int, default=0)
+    p_trans.add_argument("--allowed_extra", type=int, default=0)
     p_trans.set_defaults(func=run_transfers)
 
     # FREEHIT

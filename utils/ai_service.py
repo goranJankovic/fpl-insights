@@ -9,7 +9,6 @@ from utils.ai_data_builder import (
     reduce_candidate_pool_for_transfers,
 )
 from utils.ai_predictor import (
-    ask_llm,
     build_captaincy_prompt,
     build_transfer_prompt,
     build_freehit_prompt,
@@ -57,6 +56,8 @@ def transfer_advice(
     entry_id: int,
     gw: int,
     candidate_pool_size: int = 120,
+    free_transfers: int = 1,
+    allowed_extra: int = 0,
 ) -> Dict[str, Any]:
     """
     High-level service for transfer recommendations.
@@ -71,7 +72,7 @@ def transfer_advice(
     - Validate output (position, budget, 3-per-club)
     """
     team_ctx = build_team_json(entry_id)
-    squad_state = build_squad_state(entry_id, gw)
+    squad_state = build_squad_state(entry_id, gw, free_transfers, allowed_extra)
     pool_full = build_candidate_pool(limit=candidate_pool_size, gw=gw)
     pool_reduced = reduce_candidate_pool_for_transfers(squad_state, pool_full)
 
