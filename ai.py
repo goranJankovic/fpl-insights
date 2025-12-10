@@ -8,6 +8,8 @@ from utils.ai_service import (
     h2h_prediction
 )
 
+from utils.ai_printer import print_pretty_transfer
+
 
 def run_captaincy(args):
     result = captaincy_advice(
@@ -25,7 +27,7 @@ def run_transfers(args):
         free_transfers=args.free_transfers,
         allowed_extra=args.allowed_extra
     )
-    print(json.dumps(result, indent=2, ensure_ascii=False))
+    print_pretty_transfer(result)
 
 
 def run_freehit(args):

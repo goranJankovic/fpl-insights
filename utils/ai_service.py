@@ -1,4 +1,3 @@
-import json
 from typing import Dict, Any, Optional
 
 from utils.ai_data_builder import (
@@ -6,7 +5,7 @@ from utils.ai_data_builder import (
     build_team_json,
     build_squad_state,
     build_candidate_pool,
-    reduce_candidate_pool_for_transfers,
+    reduce_candidate_pool_for_transfers
 )
 from utils.ai_predictor import (
     build_captaincy_prompt,
