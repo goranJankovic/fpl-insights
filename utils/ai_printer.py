@@ -1,6 +1,10 @@
 import json
 import shutil
 from textwrap import wrap
+from textwrap import fill
+from typing import Dict, Any
+
+from colorama import Fore, Style
 
 # ANSI COLORS
 RED = "\033[91m"
@@ -82,3 +86,39 @@ def print_pretty_transfer(result: dict):
         print()
 
     print(header(""))
+
+def wrap(text, width=70):
+    return fill(text, width=width)
+
+
+def print_captaincy_output(data: Dict[str, Any]):
+    width = shutil.get_terminal_size().columns
+    line = "─" * min(width, 80)
+
+    print(Fore.YELLOW + f"\nFPLInsights Captaincy Advisor – GW{data['gameweek']}" + Style.RESET_ALL)
+    print(Fore.YELLOW + line + Style.RESET_ALL)
+
+    # --- Captain ---
+    cap = data["suggested_captain"]
+    print(Fore.GREEN + "\nCAPTAIN" + Style.RESET_ALL)
+    print(Fore.CYAN + f"  {cap['name']}  (ID {cap['id']})" + Style.RESET_ALL)
+    print("  " + wrap(cap["reason"]))
+
+    # --- Vice ---
+    vc = data["suggested_vice_captain"]
+    print(Fore.GREEN + "\nVICE-CAPTAIN" + Style.RESET_ALL)
+    print(Fore.BLUE + f"  {vc['name']}  (ID {vc['id']})" + Style.RESET_ALL)
+    print("  " + wrap(vc["reason"]))
+
+    # --- Other options ---
+    print(Fore.MAGENTA + "\nOther viable options:" + Style.RESET_ALL)
+    for o in data.get("other_viable_options", []):
+        print(Fore.WHITE + f"  • {o['name']} (ID {o['id']})" + Style.RESET_ALL)
+        print("    " + wrap(o["reason"]))
+
+    # --- Notes ---
+    if "notes" in data and data["notes"]:
+        print(Fore.YELLOW + "\nNotes:" + Style.RESET_ALL)
+        print("  " + wrap(data["notes"]))
+
+    print(Fore.YELLOW + line + Style.RESET_ALL + "\n")

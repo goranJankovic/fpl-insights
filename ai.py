@@ -8,7 +8,7 @@ from utils.ai_service import (
     h2h_prediction
 )
 
-from utils.ai_printer import print_pretty_transfer
+from utils.ai_printer import print_pretty_transfer, print_captaincy_output
 
 
 def run_captaincy(args):
@@ -16,7 +16,10 @@ def run_captaincy(args):
         entry_id=args.team,
         gw=args.gw
     )
-    print(json.dumps(result, indent=2, ensure_ascii=False))
+    if "error" in result and result["error"]:
+        print(result)
+    else:
+        print_captaincy_output(result)
 
 
 def run_transfers(args):
